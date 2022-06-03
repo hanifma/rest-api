@@ -6,10 +6,10 @@ import (
 )
 
 type CustomerRepository interface {
-	Create(cust *model.Customer) error
-	Update(cust *model.Customer, updateValue interface{}) error
-	Delete(cust *model.Customer) error
-	FindOne(id int) (*model.Customer,error)
+	Create(cust *model.Dokter) error
+	Update(cust *model.Dokter, updateValue interface{}) error
+	Delete(cust *model.Dokter) error
+	FindOne(id int) (*model.Dokter, error)
 }
 
 type customerRepository struct {
@@ -20,21 +20,21 @@ func NewCustomerRepository(dbConnection *gorm.DB) CustomerRepository {
 	return &customerRepository{dbConnection: dbConnection}
 }
 
-func (c *customerRepository) Create(cust *model.Customer) error {
+func (c *customerRepository) Create(cust *model.Dokter) error {
 	return c.dbConnection.Create(cust).Error
 }
 
-func (c *customerRepository) FindOne(id int) (cust *model.Customer,err error) {
-	cust = &model.Customer{}
+func (c *customerRepository) FindOne(id int) (cust *model.Dokter, err error) {
+	cust = &model.Dokter{}
 	err = c.dbConnection.First(cust, id).Error
 
 	return
 }
 
-func (c *customerRepository) Update(cust *model.Customer, updateValue interface{}) error {
+func (c *customerRepository) Update(cust *model.Dokter, updateValue interface{}) error {
 	return c.dbConnection.Model(cust).Updates(updateValue).Error
 }
 
-func (c *customerRepository) Delete(cust *model.Customer) error {
+func (c *customerRepository) Delete(cust *model.Dokter) error {
 	return c.dbConnection.Delete(cust).Error
 }

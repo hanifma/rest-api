@@ -1,25 +1,26 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/pushm0v/gorest/model"
-	"github.com/pushm0v/gorest/service"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/pushm0v/gorest/model"
+	"github.com/pushm0v/gorest/service"
 )
 
-type CustomerHandler struct{
-	custService service.CustomerService
+type JenisPenyakitHandler struct {
+	custService service.JenisPenyakitService
 }
 
-func NewCustomerHandler(customerService service.CustomerService) *CustomerHandler {
-	return &CustomerHandler{custService: customerService}
+func NewJenisPenyakitHandler(jenisPenyakitService service.JenisPenyakitService) *JenisPenyakitHandler {
+	return &JenisPenyakitHandler{custService: jenisPenyakitService}
 }
 
-func (s *CustomerHandler) responseBuilder(w http.ResponseWriter, message interface{}) {
+func (s *JenisPenyakitHandler) responseBuilder(w http.ResponseWriter, message interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	m := model.Response{
 		Message: message,
@@ -31,7 +32,7 @@ func (s *CustomerHandler) responseBuilder(w http.ResponseWriter, message interfa
 	}
 }
 
-func (s *CustomerHandler) Get(w http.ResponseWriter, r *http.Request) {
+func (s *JenisPenyakitHandler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	custID, err := strconv.Atoi(vars["id"])
@@ -42,9 +43,9 @@ func (s *CustomerHandler) Get(w http.ResponseWriter, r *http.Request) {
 		s.responseBuilder(w, errMsg)
 		return
 	}
-	customer, err := s.custService.GetCustomer(custID)
+	jenisPenyakit, err := s.custService.GetJenisPenyakit(custID)
 	if err != nil {
-		errMsg := fmt.Sprintf("Get Customer error : %v", err)
+		errMsg := fmt.Sprintf("Get JenisPenyakit error : %v", err)
 
 		w.WriteHeader(http.StatusBadRequest)
 		s.responseBuilder(w, errMsg)
@@ -52,12 +53,12 @@ func (s *CustomerHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	s.responseBuilder(w, customer)
+	s.responseBuilder(w, jenisPenyakit)
 }
 
-func (s *CustomerHandler) Post(w http.ResponseWriter, r *http.Request) {
+func (s *JenisPenyakitHandler) Post(w http.ResponseWriter, r *http.Request) {
 
-	var cust = &model.Customer{}
+	var cust = &model.JenisPenyakit{}
 	err := json.NewDecoder(r.Body).Decode(cust)
 	if err != nil {
 		errMsg := fmt.Sprintf("Request decoder error : %v", err)
@@ -67,19 +68,19 @@ func (s *CustomerHandler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.custService.CreateCustomer(cust)
+	err = s.custService.CreateJenisPenyakit(cust)
 	if err != nil {
-		errMsg := fmt.Sprintf("Create customer error : %v", err)
+		errMsg := fmt.Sprintf("Create jenisPenyakit error : %v", err)
 
 		w.WriteHeader(http.StatusInternalServerError)
 		s.responseBuilder(w, errMsg)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	s.responseBuilder(w, "customer created")
+	s.responseBuilder(w, "jenisPenyakit created")
 }
 
-func (s *CustomerHandler) Put(w http.ResponseWriter, r *http.Request) {
+func (s *JenisPenyakitHandler) Put(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	custID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -89,7 +90,7 @@ func (s *CustomerHandler) Put(w http.ResponseWriter, r *http.Request) {
 		s.responseBuilder(w, errMsg)
 		return
 	}
-	var cust = &model.Customer{}
+	var cust = &model.JenisPenyakit{}
 	err = json.NewDecoder(r.Body).Decode(cust)
 	if err != nil {
 		errMsg := fmt.Sprintf("Request decoder error : %v", err)
@@ -99,9 +100,9 @@ func (s *CustomerHandler) Put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.custService.UpdateCustomer(custID, cust)
+	err = s.custService.UpdateJenisPenyakit(custID, cust)
 	if err != nil {
-		errMsg := fmt.Sprintf("Update customer error : %v", err)
+		errMsg := fmt.Sprintf("Update jenisPenyakit error : %v", err)
 
 		w.WriteHeader(http.StatusNotFound)
 		s.responseBuilder(w, errMsg)
@@ -109,10 +110,10 @@ func (s *CustomerHandler) Put(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusAccepted)
-	s.responseBuilder(w, "customer updated")
+	s.responseBuilder(w, "jenisPenyakit updated")
 }
 
-func (s *CustomerHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (s *JenisPenyakitHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	custID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -123,9 +124,9 @@ func (s *CustomerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.custService.DeleteCustomer(custID)
+	err = s.custService.DeleteJenisPenyakit(custID)
 	if err != nil {
-		errMsg := fmt.Sprintf("Delete customer error : %v", err)
+		errMsg := fmt.Sprintf("Delete jenisPenyakit error : %v", err)
 
 		w.WriteHeader(http.StatusNotFound)
 		s.responseBuilder(w, errMsg)
@@ -133,10 +134,10 @@ func (s *CustomerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	s.responseBuilder(w, "customer deleted")
+	s.responseBuilder(w, "jenisPenyakit deleted")
 }
 
-func (s *CustomerHandler) NotFound(w http.ResponseWriter, r *http.Request) {
+func (s *JenisPenyakitHandler) NotFound(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	s.responseBuilder(w, "not found")
 }
